@@ -222,7 +222,7 @@ def parsePlayPart(playPart):
 def loadPlays():
 	global plays
 	plays = {}
-	playsPage = reddit.getWikiPage(globals.CONFIG_SUBREDDIT, "plays")
+	playsPage = reddit.getWikiPage(globals.CONFIG_SUBREDDIT, "new_plays")
 
 	for playLine in playsPage.splitlines():
 		items = playLine.split('|')
@@ -274,7 +274,7 @@ def loadPlays():
 def loadTimes():
 	global times
 	times = {}
-	timesPage = reddit.getWikiPage(globals.CONFIG_SUBREDDIT, "times")
+	timesPage = reddit.getWikiPage(globals.CONFIG_SUBREDDIT, "new_times")
 
 	for timeLine in timesPage.splitlines():
 		items = timeLine.split('|')
@@ -350,5 +350,3 @@ def loadAdmins():
 def loadIntro():
 	global intro
 	intro = reddit.getWikiPage(globals.CONFIG_SUBREDDIT, "intro")
-
-
