@@ -63,19 +63,21 @@ log.debug("Connecting to reddit")
 
 once = False
 debug = False
-user = None
-if len(sys.argv) >= 2:
-	user = sys.argv[1]
-	for arg in sys.argv:
-		if arg == 'once':
-			once = True
-		elif arg == 'debug':
-			debug = True
-		elif arg == 'shortQuarter':
-			globals.quarterLength = 30
-else:
-	log.error("No user specified, aborting")
-	sys.exit(0)
+user = "bot1"
+log.debug(len(sys.argv))
+
+# if len(sys.argv) >= 2:
+# 	user = sys.argv[1]
+# 	for arg in sys.argv:
+# 		if arg == 'once':
+# 			once = True
+# 		elif arg == 'debug':
+# 			debug = True
+# 		elif arg == 'shortQuarter':
+# 			globals.quarterLength = 30
+# else:
+# 	log.error("No user specified, aborting")
+# 	sys.exit(0)
 
 
 if not reddit.init(user):
