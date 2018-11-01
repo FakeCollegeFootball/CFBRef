@@ -495,16 +495,24 @@ def executePlay(game, play, number, timeOption):
 
 			if result['result'] == Result.TWO_POINT:
 				log.debug("Successful two point conversion")
-				resultMessage = "The two point conversion is successful"
-				scoreTwoPoint(game, game.status.possession)
-				if utils.isGameOvertime(game):
-					timeMessage = overtimeTurnover(game)
+				if play == Play.TWO_POINT:
+					resultMessage = "The two point conversion is successful."
+					scoreTwoPoint(game, game.status.possession)
+					if utils.isGameOvertime(game):
+						timeMessage = overtimeTurnover(game)
+					else:
+						setStateKickoff(game, game.status.possession)
 				else:
-					setStateKickoff(game, game.status.possession)
+					resultMessage = "It's a fake! They're going for two! And they got it!"
+					scoreTwoPoint(game, game.status.possession)
+					if utils.isGameOvertime(game):
+						timeMessage = overtimeTurnover(game)
+					else:
+						setStateKickoff(game, game.status.possession)
 
 			elif result['result'] == Result.PAT:
 				log.debug("Successful PAT")
-				resultMessage = "The PAT was successful"
+				resultMessage = "The PAT was successful."
 				scorePAT(game, game.status.possession)
 				if utils.isGameOvertime(game):
 					timeMessage = overtimeTurnover(game)
@@ -514,11 +522,11 @@ def executePlay(game, play, number, timeOption):
 			elif result['result'] == Result.KICKOFF:
 				log.debug("Attempt unsuccessful")
 				if play == Play.TWO_POINT:
-					resultMessage = "The two point conversion attempt was unsuccessful"
+					resultMessage = "The two point conversion attempt was unsuccessful."
 				elif play == Play.PAT:
-					resultMessage = "The PAT attempt was unsuccessful"
+					resultMessage = "The PAT attempt was unsuccessful."
 				else:
-					resultMessage = "Conversion unsuccessful"
+					resultMessage = "Conversion unsuccessful."
 				if utils.isGameOvertime(game):
 					timeMessage = overtimeTurnover(game)
 				else:
@@ -629,11 +637,26 @@ def executePlay(game, play, number, timeOption):
 
 			elif result['result'] == Result.TOUCHDOWN:
 				log.debug("Result is a touchdown")
-				resultMessage = "It's a {} into the endzone! Touchdown {}!".format(play.name.lower(), game.team(game.status.possession).name)
-				previousLocation = game.status.location
-				utils.addStatRunPass(game, play, 100 - previousLocation)
-				scoreTouchdown(game, game.status.possession)
-				yards = 100 - previousLocation
+
+				if play == play.FIELD_GOAL:
+				    resultMessage = "The field goal is a fake! And it's a pass into the endzone! Touchdown {}!".format(game.team(game.status.possession).name)
+				    previousLocation = game.status.location
+				    utils.addStatRunPass(game, play.PASS, 100 - previousLocation)
+				    scoreTouchdown(game, game.status.possession)
+				    yards = 100 - previousLocation
+
+				elif play == play.PUNT:
+				    resultMessage = "It's a muffed punt! And it's picked up and ran all the way into the endzone! Touchdown {}!".format(game.team(game.status.possession).name)
+				    previousLocation = game.status.location
+				    scoreTouchdown(game, game.status.possession)
+				    yards = 100 - previousLocation
+
+				else:
+					resultMessage = "It's a {} into the endzone! Touchdown {}!".format(play.name.lower(), game.team(game.status.possession).name)
+					previousLocation = game.status.location
+					utils.addStatRunPass(game, play, 100 - previousLocation)
+					scoreTouchdown(game, game.status.possession)
+					yards = 100 - previousLocation
 
 			elif result['result'] == Result.FIELD_GOAL:
 				log.debug("Result is a field goal")
@@ -777,6 +800,10 @@ def executePlay(game, play, number, timeOption):
 	if success:
 		game.status.plays.append(playSummary)
 
-
+	#Append usernames to messages
+	messages.append("{} {}".format(
+		utils.getCoachString(game, game.status.waitingOn),
+		utils.getCoachString(game, game.status.waitingOn.negate())
+	))
 
 	return success, '\n\n'.join(messages)
