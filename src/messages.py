@@ -98,7 +98,7 @@ def processMessageDefer(game, isDefer, author):
 	utils.setGamePlayed(game)
 	if utils.isGameOvertime(game):
 		if isDefer:
-			log.debug("User deferred, {} is attacking".format(authorHomeAway.negate().name()))
+			log.debug("User deferred, {} is on offense".format(authorHomeAway.negate().name()))
 
 			state.setStateOvertimeDrive(game, authorHomeAway.negate())
 			game.status.receivingNext = authorHomeAway.copy()
@@ -106,12 +106,12 @@ def processMessageDefer(game, isDefer, author):
 			game.dirty = True
 			utils.sendDefensiveNumberMessage(game)
 
-			return True, "{} deferred and will attack next. Overtime has started!\n\n{}\n\n{}".format(
+			return True, "{} deferred and will have the ball next. Overtime has started!\n\n{}\n\n{}".format(
 				game.team(authorHomeAway).name,
 				utils.getCurrentPlayString(game),
 				utils.getWaitingOnString(game))
 		else:
-			log.debug("User elected to attack, {} is attacking".format(authorHomeAway))
+			log.debug("User elected to receive, {} is on offense".format(authorHomeAway))
 
 			state.setStateOvertimeDrive(game, authorHomeAway)
 			game.status.receivingNext = authorHomeAway.negate()
@@ -208,7 +208,7 @@ def processMessageOffensePlay(game, message, author):
 		timeOption = TimeOption.CHEW
 	else:
 		timeOption = TimeOption.NORMAL
-	if any(x in message for x in ['chew the clock', 'milk the clock', 'chew clock']):
+	if any(x in message for x in ['chew the clock', 'milk the clock', 'chew clock', 'chew']):
 		timeOption = TimeOption.CHEW
 	elif any(x in message for x in ['hurry up', 'no huddle', 'no-huddle']):
 		timeOption = TimeOption.HURRY
