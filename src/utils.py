@@ -18,6 +18,7 @@ import wiki
 import reddit
 import classes
 import index
+import discord_msg
 from classes import HomeAway
 from classes import Action
 from classes import Play
@@ -653,6 +654,17 @@ def getWaitingOnString(game):
 def sendDefensiveNumberMessage(game):
 	defenseHomeAway = game.status.possession.negate()
 	log.debug("Sending get defence number to {}".format(getCoachString(game, defenseHomeAway)))
+	# results = reddit.sendMessage(recipients=game.team(defenseHomeAway).coaches,
+	#					subject="{} vs {}".format(game.away.name, game.home.name),
+	#					message=embedTableInMessage(
+	#						"{}\n\nReply with a number between **1** and **1500**, inclusive.\n\nYou have until {}.\n\nLast offensive number: {}."
+	#							.format(
+	#							getCurrentPlayString(game),
+	#							renderDatetime(game.playclock),
+	#							globals.lastOffenseNumber
+	#						),
+	#						getActionTable(game, game.status.waitingAction)
+	#					))
 	results = reddit.sendMessage(recipients=game.team(defenseHomeAway).coaches,
 						subject="{} vs {}".format(game.away.name, game.home.name),
 						message=embedTableInMessage(
@@ -682,6 +694,8 @@ def extractPlayNumber(message):
 	if number < 1 or number > 1500:
 		log.debug("Number out of range: {}".format(number))
 		return -1, "I found {}, but that's not a valid number.".format(number)
+
+	# globals.lastOffenseNumber = number
 
 	return number, None
 
@@ -819,6 +833,8 @@ def endGame(game, winner, postThread=True):
 	if game.status.down > 4:
 		game.status.down = 4
 	index.endGame(game)
+
+	discord_msg.discordFinal(game)
 
 	if postThread:
 		postGameThread = renderPostGame(game)
