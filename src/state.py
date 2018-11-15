@@ -1,21 +1,22 @@
 import logging.handlers
 from datetime import datetime
 
-import wiki
-import utils
 import classes
 import globals
-from classes import T
-from classes import HomeAway
-from classes import PlaySummary
-from classes import Play
-from classes import QuarterType
+import utils
+import wiki
+import discord_msg
 from classes import Action
-from classes import TimeoutOption
-from classes import TimeOption
+from classes import HomeAway
 from classes import OffenseType
+from classes import Play
+from classes import PlaySummary
+from classes import QuarterType
 from classes import Result
 from classes import RunStatus
+from classes import T
+from classes import TimeOption
+from classes import TimeoutOption
 
 log = logging.getLogger("bot")
 
@@ -74,17 +75,25 @@ def scoreTouchdown(game, homeAway):
 	game.status.waitingAction = Action.CONVERSION
 	game.status.waitingOn = homeAway.copy()
 
+	discord_msg.discordTouchdown(game, homeAway)
+
 
 def scoreFieldGoal(game, homeAway):
 	scoreForTeam(game, 3, homeAway)
+
+	discord_msg.discordFieldGoal(game, homeAway)
 
 
 def scoreTwoPoint(game, homeAway):
 	scoreForTeam(game, 2, homeAway)
 
+	discord_msg.discordTwoPoint(game, homeAway)
+
 
 def scorePAT(game, homeAway):
 	scoreForTeam(game, 1, homeAway)
+
+	discord_msg.discordPAT(game, homeAway)
 
 
 def turnover(game):
@@ -141,6 +150,8 @@ def overtimeTurnover(game):
 def scoreSafety(game, homeAway):
 	scoreForTeam(game, 2, homeAway)
 	setStateKickoff(game, homeAway.negate())
+
+	discord_msg.discordSafety(game, homeAway)
 
 
 def getNumberDiffForGame(game, offenseNumber):
