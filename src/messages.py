@@ -175,7 +175,7 @@ def processMessageDefenseNumber(game, message, author):
 	utils.setGamePlayed(game)
 
 	log.debug("Sending offense play comment")
-	resultMessage = "{} has submitted their number. {} you're up. You have until {}.\n\n{}\n\n{} reply with {} and your number. [Play list]({}){}{}".format(
+	resultMessage = "{} has submitted their number. {} you're up. You have until {}.\n\n{}\n\n{} reply with {} and your number. [Play list]({}){}".format(
 		game.team(game.status.waitingOn.negate()).name,
 		game.team(game.status.waitingOn).name,
 		utils.renderDatetime(game.playclock),
@@ -183,8 +183,8 @@ def processMessageDefenseNumber(game, message, author):
 		utils.getCoachString(game, game.status.waitingOn),
 		utils.listSuggestedPlays(game),
 		"https://www.reddit.com/r/FakeCollegeFootball/wiki/refbot",
-		"\n\nThe clock has stopped" if not game.status.timeRunoff else "",
-		"\n\nDefense has requested a timeout" if game.status.state(game.status.possession.negate()).requestedTimeout else ""
+		"\n\nThe clock has stopped" if not game.status.timeRunoff else ""
+		"\n\nDefense has requested a timeout" if game.status.state(game.status.possession.negate()).requestedTimeout == TimeoutOption.REQUESTED else ""
 	)
 	utils.sendGameComment(game, resultMessage, utils.getActionTable(game, game.status.waitingAction))
 
@@ -211,7 +211,7 @@ def processMessageOffensePlay(game, message, author):
 		timeOption = TimeOption.NORMAL
 	if any(x in message for x in ['chew the clock', 'milk the clock', 'chew clock', 'chew']):
 		timeOption = TimeOption.CHEW
-	elif any(x in message for x in ['hurry up', 'no huddle', 'no-huddle']):
+	elif any(x in message for x in ['hurry up', 'no huddle', 'no-huddle', 'hurry']):
 		timeOption = TimeOption.HURRY
 	elif any(x in message for x in ['normal']):
 		timeOption = TimeOption.NORMAL
